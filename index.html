@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.1/dist/echarts.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #imageContainer {
+      display: flex;
+      padding-left: 80px;
+      padding-top: 0;
+      background-color: #f0f0f0;
+    }
+
+    #imageContainer img {
+      margin: 110px;
+    }
+
+  </style>
+  <style>
+    body {
+      background-color: white;
+    }
+  </style>
+  <title>Weather Tracking App</title>
+</head>
+<body>
+<h1>Weather Tracking App</h1>
+<input type="text" id="cityInput" placeholder="Enter city name">
+<ix-button id="getWeatherButton" class="m-1" variant="primary">Get Weather</ix-button>
+<p id="weatherInfo"></p>
+
+
+
+
+<script type="module" src="./main.js"></script>
+
+<div
+        id="main"
+        style="display: block; position: relative; width: 100%; height: 40rem; background-color: white"
+></div>
+<script type="module">
+  import { registerTheme, } from '@siemens/ix-echarts';
+  import '@siemens/ix-echarts';
+  import '@siemens/ix-icons/dist/css/ix-icons.css';
+  import '@siemens/ix/dist/siemens-ix/siemens-ix.css';
+  import { applyPolyfills, defineCustomElements } from '@siemens/ix/loader';
+
+  var weatherData = 10;
+  document.addEventListener("DOMContentLoaded", function() {
+    const getWeatherButton = document.getElementById("getWeatherButton");
+    const cityInput = document.getElementById("cityInput");
+    const weatherInfoElement = document.getElementById("weatherInfo");
+
+    getWeatherButton.addEventListener("click", function() {
+      const city = cityInput.value;
+
+      fetchWeatherData(city);
+    });
+
+    function fetchWeatherData(city) {
+      fetch(`http://localhost:80/siemensProject/index.php?city=${encodeURIComponent(city)}`)
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Network response was not ok');
+                }
+                return response.json(); // Parse JSON response
+              })
+              .then(data => {
+                if (data.error) {
+                  weatherInfoElement.textContent = data.error;
+                } else {
+                  // Update HTML elements with data received from PHP
+                  weatherInfoElement.innerHTML = `
+                    Max Sıcaklık: ${data.FirstMaxTemp} °C<br>
+                    Min Sıcaklık: ${data.FirstMinTemp} °C<br>
+                    Ort Sıcaklık: ${data.FirstAvgTemp} °C<br>
+                    Durum: ${data.FirstCondition}<br>
+                    <img src="${data.FirstConditionIcon}" alt="${data.FirstCondition}">
+                `;
+
+                  testing(data);
+                  //weatherData = data;
+                }
+              })
+              .catch(error => {
+                console.error("Error:", error);
+              });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  });
+
+
+  var firstImg = document.createElement('img');
+  var secondImg = document.createElement('img');
+  var thirdImg = document.createElement('img');
+  var fourthImg = document.createElement('img');
+  var fifthImg = document.createElement('img');
+  var container = document.getElementById('imageContainer');
+
+
+  function testing(data) {
+    //var first = true;
+    //import echarts from "@echarts";
+
+    registerTheme(echarts);
+
+    var myChart = echarts.init(
+            document.querySelector('#main'),
+            window.demoTheme // brand-dark, brand-light, classic-dark or classic-light
+    );
+
+    myChart.setOption({
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          //type: 'shadow',
+        },
+      },
+      legend: {},
+      grid: {
+        left: '1%',
+        right: '1%',
+        bottom: '1%',
+        containLabel: true,
+      },
+      xAxis: [
+        {
+          type: 'category',
+          data: [data.FirstDate, data.SecondDate,data.ThirdDate,data.FourthDate,data.FifthDate],
+        },
+      ],
+      yAxis: [
+        {
+          backgroundColor: "#fff",
+          textColor: "#fff",
+          type: 'value',
+        },
+      ],
+      series: [
+        {
+          name: 'Maksimum Sıcaklık °C',
+          barWidth: 35,
+          type: 'bar',
+
+          emphasis: {
+            focus: 'series',
+          },
+          data: [data.FirstMaxTemp, data.SecondMaxTemp, data.ThirdMaxTemp, data.FourthMaxTemp, data.FifthMaxTemp],
+        },
+        {
+          name: 'Ortalama Sıcaklık °C',
+          barWidth: 35,
+          type: 'bar',
+
+          emphasis: {
+            focus: 'series',
+          },
+          data: [data.FirstAvgTemp, data.SecondAvgTemp, data.ThirdAvgTemp, data.FourthAvgTemp, data.FifthAvgTemp],
+        },
+
+        {
+          name: 'Minimum Sıcaklık °C',
+          barWidth: 35,
+          type: 'bar',
+          emphasis: {
+            focus: 'series',
+          },
+          data: [data.FirstMinTemp, data.SecondMinTemp, data.ThirdMinTemp, data.FourthMinTemp, data.FifthMinTemp],
+        },
+
+      ],
+    });
+
+
+
+
+      firstImg.setAttribute('src', data.FirstConditionIcon);
+      firstImg.setAttribute('alt', data.FirstCondition);
+      firstImg.setAttribute('width', '100');
+      firstImg.setAttribute('height', '75');
+
+
+
+      secondImg.setAttribute('src', data.SecondConditionIcon);
+      secondImg.setAttribute('alt', data.SecondCondition);
+      secondImg.setAttribute('width', '100');
+      secondImg.setAttribute('height', '75');
+
+
+
+
+      thirdImg.setAttribute('src', data.ThirdConditionIcon);
+      thirdImg.setAttribute('alt', data.ThirdCondition);
+      thirdImg.setAttribute('width', '100');
+      thirdImg.setAttribute('height', '75');
+
+
+
+
+      fourthImg.setAttribute('src', data.FourthConditionIcon);
+      fourthImg.setAttribute('alt', data.FourthCondition);
+      fourthImg.setAttribute('width', '100');
+      fourthImg.setAttribute('height', '75');
+
+
+
+
+      fifthImg.setAttribute('src', data.FifthConditionIcon);
+      fifthImg.setAttribute('alt', data.FifthCondition);
+      fifthImg.setAttribute('width', '100');
+      fifthImg.setAttribute('height', '75');
+
+
+      container.appendChild(firstImg);
+      container.appendChild(secondImg);
+      container.appendChild(thirdImg);
+      container.appendChild(fourthImg);
+      container.appendChild(fifthImg);
+
+
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+</script>
+
+<div id="imageContainer">
+  <div id="firstDayImage"></div>
+
+  <div id="secondDayImage"></div>
+  <div id="thirdDayImage"></div>
+  <div id="fourthDayImage"></div>
+  <div id="fifthDayImage"></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<!--<script src="script.js"></script>-->
+
+</body>
+</html>
